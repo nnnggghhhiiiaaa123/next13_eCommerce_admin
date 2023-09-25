@@ -1,4 +1,4 @@
-# Full Stack E-Commerce + Dashboard & CMS: Next.js 13 App Router, React, Tailwind, Prisma, Mongo, 2023
+## Full Stack E-Commerce + Dashboard & CMS: Next.js 13 App Router, React, Tailwind, Prisma, Mongo, 2023
 
 [Reference to AntonioErdel ](https://github.com/AntonioErdeljac/next13-ecommerce-admin/tree/master)
 
