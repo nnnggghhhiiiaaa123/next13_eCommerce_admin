@@ -9,7 +9,7 @@ import axios from "axios";
 
 import { Heading } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
-import { Store } from "@prisma/client";
+import { Billboard } from "@prisma/client";
 import { Trash } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Form, FormControl, FormLabel, FormField, FormItem, FormMessage } from "@/components/ui/form";
@@ -19,16 +19,17 @@ import { AlertModal } from "@/components/modals/alert-modal";
 import { ApiAlert } from "@/components/ui/api-alert";
 import { useOrigin } from "@/hooks/use-origin";
 
-interface SettingsFormProps {
-    initialData: Store;
+const formSchema = z.object({
+    label: z.string().min(1),
+    imageUrl: z.string().min(1),
+});
+type BillboardsFormValues = z.infer<typeof formSchema>
+
+interface BillboardsFormProps {
+    initialData: Billboard | null;
 }
 
-const formSchema = z.object({
-    name: z.string().min(1),
-});
-type SettingsFormValues = z.infer<typeof formSchema>
-
-export const SettingsForm: React.FC<SettingsFormProps> = ({
+export const BillboardsForm: React.FC<BillboardsFormProps> = ({
     initialData
 }) => {
     const params = useParams();
@@ -36,11 +37,14 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const origin = useOrigin();
-    const form = useForm<SettingsFormValues>({
+    const form = useForm<BillboardsFormValues>({
         resolver: zodResolver(formSchema),
-        defaultValues: initialData
+        defaultValues: initialData || {
+            label: '',
+            imageUrl: ''
+        }
     })
-    const onSubmit = async (data: SettingsFormValues) => {
+    const onSubmit = async (data: BillboardsFormValues) => {
         try {
             setLoading(true);
             await axios.patch(`/api/stores/${params.storeId}`, data);
@@ -57,14 +61,14 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({
         try {
             setLoading(true);
             console.log("axios", params.storeId);
-            var res= await axios.delete(`/api/stores/${params.storeId}`);
+            var res = await axios.delete(`/api/stores/${params.storeId}`);
             router.refresh();
             router.push("/")
             toast.success("Store deleted.")
-            console.log("ok",res );
+            console.log("ok", res);
         } catch (error) {
             toast.error("Make sure you removed all products and categories first.");
-        }finally{
+        } finally {
             setLoading(false);
             setOpen(false)
 
@@ -117,7 +121,7 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({
                 </form>
             </Form>
             <Separator />
-            <ApiAlert 
+            <ApiAlert
                 title="NEXT_PUBLIC_API_URL"
                 description={`${origin}/api/${params.storeId}`}
                 variant="public" />
