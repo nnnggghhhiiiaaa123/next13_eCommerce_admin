@@ -1,23 +1,24 @@
 "use client";
 
 import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, } from "react-hook-form";
-import { useState } from "react";
-import toast from "react-hot-toast";
 import axios from "axios";
-
-import { Heading } from "@/components/ui/heading";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { Billboard } from "@prisma/client";
 import { Trash } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import { Form, FormControl, FormLabel, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useParams, useRouter } from "next/navigation";
-import { AlertModal } from "@/components/modals/alert-modal";
-import { ApiAlert } from "@/components/ui/api-alert";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, } from "react-hook-form";
+import toast from "react-hot-toast";
 import { useOrigin } from "@/hooks/use-origin";
+import { useParams, useRouter } from "next/navigation";
+
+import ImageUpload from "@/components/ui/image-upload";
+import { Heading } from "@/components/ui/heading";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+
+import { Form, FormControl, FormLabel, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { AlertModal } from "@/components/modals/alert-modal";
 
 const formSchema = z.object({
     label: z.string().min(1),
@@ -52,12 +53,19 @@ export const BillboardsForm: React.FC<BillboardsFormProps> = ({
             imageUrl: ''
         }
     })
+
     const onSubmit = async (data: BillboardsFormValues) => {
         try {
             setLoading(true);
-            await axios.patch(`/api/stores/${params.storeId}`, data);
+            if (initialData) {
+                await axios.patch(`/api/${params.storeId}/billboards/${params.billboardId}`, data);
+
+            } else {
+                await axios.post(`/api/${params.storeId}/billboards`, data);
+
+            }
             router.refresh()
-            toast.success("Store updated.")
+            toast.success(toastMessage);
 
         } catch (error) {
             toast.error("Something went wrong.");
@@ -69,13 +77,12 @@ export const BillboardsForm: React.FC<BillboardsFormProps> = ({
         try {
             setLoading(true);
             console.log("axios", params.storeId);
-            var res = await axios.delete(`/api/stores/${params.storeId}`);
+            var res = await axios.delete(`/api/${params.storeId}/billboard/${params.billboardId}`);
             router.refresh();
-            router.push("/")
-            toast.success("Store deleted.")
-            console.log("ok", res);
+            router.push(`/${params.storeId}/billboards`)
+            toast.success("Billboard deleted.")
         } catch (error) {
-            toast.error("Make sure you removed all products and categories first.");
+            toast.error("Make sure you removed all categories using this billboard first.");
         } finally {
             setLoading(false);
             setOpen(false)
@@ -111,19 +118,40 @@ export const BillboardsForm: React.FC<BillboardsFormProps> = ({
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
                     <div className="grid grid-cols-3 gap-8">
-                        <FormField control={form.control}
-                            name="label"
+                        <FormField
+                            control={form.control}
+                            name="imageUrl"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel> Label </FormLabel>
+                                    <FormLabel> Background image</FormLabel>
                                     <FormControl>
-                                        <Input disabled={loading} placeholder="Billboard label" {...field} />
+                                        <ImageUpload
+                                            value={field.value ? [field.value] : []}
+                                            disabled={loading}
+                                            onChange={(url) => field.onChange(url)}
+                                            onRemove={() => field.onChange("")}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
 
                             )} />
 
+                    </div>
+                    <div className="md:grid md:grid-cols-3 gap-8">
+                        <FormField
+                            control={form.control}
+                            name="label"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Label</FormLabel>
+                                    <FormControl>
+                                        <Input disabled={loading} placeholder="Billboard label" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                     </div>
                     <Button disabled={loading} className="ml-auto" type="submit">
                         {action}
