@@ -34,9 +34,17 @@ export const BillboardsForm: React.FC<BillboardsFormProps> = ({
 }) => {
     const params = useParams();
     const router = useRouter();
+    const origin = useOrigin();
+
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
-    const origin = useOrigin();
+
+    const title = initialData ? "Edit billboard" : "Create billboard";
+    const description = initialData ? "Edit a billboard" : "Create billboard";
+    const toastMessage = initialData ? "Billboard updated" : "Billboard created";
+    const action = initialData ? "Save changes" : "Created";
+
+
     const form = useForm<BillboardsFormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: initialData || {
@@ -85,9 +93,10 @@ export const BillboardsForm: React.FC<BillboardsFormProps> = ({
             />
             <div className="flex items-center justify-between">
                 <Heading
-                    title="Settings"
-                    description="Manage store preferences" />
-                <Button
+                    title={title}
+                    description={description} />
+
+                {initialData && (<Button
                     disabled={loading}
                     variant="destructive"
                     size="icon"
@@ -95,19 +104,20 @@ export const BillboardsForm: React.FC<BillboardsFormProps> = ({
                         () => setOpen(true)
                     }>
                     <Trash className="h-4 w-4" />
-                </Button>
+                </Button>)
+                }
             </div>
             <Separator />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
                     <div className="grid grid-cols-3 gap-8">
                         <FormField control={form.control}
-                            name="name"
+                            name="label"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel> Name </FormLabel>
+                                    <FormLabel> Label </FormLabel>
                                     <FormControl>
-                                        <Input disabled={loading} placeholder="Store name" {...field} />
+                                        <Input disabled={loading} placeholder="Billboard label" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -116,15 +126,12 @@ export const BillboardsForm: React.FC<BillboardsFormProps> = ({
 
                     </div>
                     <Button disabled={loading} className="ml-auto" type="submit">
-                        Save changes
+                        {action}
                     </Button>
                 </form>
             </Form>
             <Separator />
-            <ApiAlert
-                title="NEXT_PUBLIC_API_URL"
-                description={`${origin}/api/${params.storeId}`}
-                variant="public" />
+
 
         </>
     );
