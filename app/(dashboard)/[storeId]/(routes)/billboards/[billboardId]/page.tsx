@@ -1,5 +1,5 @@
 import prismadb from "@/lib/prismadb";
-import { BillboardsForm } from "./components/billboard-form";
+import { BillboardForm } from "./components/billboard-form";
 import { useEffect } from "react";
 
 const BillboardPage = async ({
@@ -21,7 +21,7 @@ const BillboardPage = async ({
         <div className="flex-col">
             <div className="flex-1 space-y-4 p-8 pt-6">
 
-                <BillboardsForm initialData={billboard} />
+                <BillboardForm initialData={billboard} />
             </div>
         </div>
     );

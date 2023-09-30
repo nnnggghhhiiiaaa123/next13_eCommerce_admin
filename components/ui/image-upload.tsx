@@ -13,7 +13,6 @@ interface ImageUploadProps {
     value: string[];
 }
 
-
 const ImageUpload: React.FC<ImageUploadProps> = ({
     disabled,
     onChange,
