@@ -69,7 +69,6 @@ STRIPE_WEBHOOK_SECRET=
 
 ### Connect to PlanetScale and Push Prisma
 ```shell
-npm install prisma --save-dev
 npx prisma generate
 npx prisma db push
 ```
