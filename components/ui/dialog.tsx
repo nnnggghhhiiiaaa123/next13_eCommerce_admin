@@ -7,7 +7,7 @@ import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const Dialog = DialogPrimitive.Root;
-
+const SheetPortal = DialogPrimitive.Portal;
 const DialogTrigger = DialogPrimitive.Trigger;
 
 const DialogPortal = ({
@@ -15,13 +15,13 @@ const DialogPortal = ({
   children,
   ...props
 }: DialogPrimitive.DialogPortalProps) => (
-  <DialogPrimitive.Portal className={cn(className)} {...props}>
+  <SheetPortal className={cn(className)} {...props}>
     <div className="fixed inset-0 z-50 flex items-start justify-center sm:items-center">
       {children}
     </div>
-  </DialogPrimitive.Portal>
+  </SheetPortal>
 );
-DialogPortal.displayName = DialogPrimitive.Portal.displayName;
+DialogPortal.displayName = SheetPortal.displayName;
 
 const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
