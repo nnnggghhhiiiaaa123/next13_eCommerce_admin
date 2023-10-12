@@ -13,7 +13,6 @@ export default async function SetupLayout({
   if (!userId) {
     redirect('/sign-in');
   }
-  const billBoard = await prisma?.billboard
   const store = await prismadb.store.findFirst({
     where: {
       userId,
